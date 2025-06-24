@@ -47,8 +47,7 @@ int* read_file(const char *filename, int* count) {
 	while (*count < MAX && fscanf(file, "%d", &numbers[*count]) == 1) {
 		(*count)++;
 	}
-    
-    free(numbers);
+
 	fclose(file);
 	return numbers;
 }
