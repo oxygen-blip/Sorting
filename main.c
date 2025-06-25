@@ -185,7 +185,7 @@ int main() {
 				break;
 			}
 			case 0: {
-				printf("Выход...\n");
+				printf("Работа программы завершена.\n");
 				break;
 			}
 			default: {
