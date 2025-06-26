@@ -53,7 +53,7 @@ int* read_file(const char *filename, int* count) {
 	return numbers;
 }
 
-void bubble_sort(int *array, int count) {
+void bubble_sort(int *array, int count, int *swap_count) {
    
     for (int i = 0; i < count - 1; i++) {
         for (int j = 0; j < count - i - 1; j++) {
@@ -61,9 +61,35 @@ void bubble_sort(int *array, int count) {
                 int tmp = array[j];
                 array[j] = array[j + 1];
                 array[j + 1] = tmp;
+				(*swap_count)++;
+
             }
         }
     }
+}
+
+void rev_bubble_sort(int *array, int count, int *swap_count){
+
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (array[j] < array[j + 1]) {
+                int tmp = array[j];
+                array[j] = array[j + 1];
+                array[j + 1] = tmp;
+                (*swap_count)++;
+            }
+        }
+    }  
+}
+
+int check1 (int *array, int count) {
+
+    for (int i = 0; i < count - 1; i++) {
+        if (array[i] < array[i + 1]) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 int check (int *array, int count) {
@@ -121,11 +147,27 @@ int main() {
 				scanf("%255s", filename);
 				numbers = read_file(filename, &count);
 				if (numbers != NULL && count > 0) {
+
+					int swap_count = 0;
+
+                    printf("Выберите тип сортировки:\n");
+                    printf("1. По возрастанию\n");
+                    printf("2. По убыванию\n");
+                    int sort_type;
+                    scanf("%d", &sort_type);
+
 					clock_t start = clock();
-					bubble_sort(numbers, count);
-					clock_t end = clock();
-					double stime = (double)(end - start) / CLOCKS_PER_SEC;
-					printf("\nСортировка завершена за %.4f секунд.\n", stime);
+
+					if (sort_type == 1){
+						bubble_sort(numbers, count, &swap_count);
+						printf("\nСортировка завершена за %.4f секунд.\n", (double)(clock() - start)/CLOCKS_PER_SEC);
+						printf("Кол-во операций: %d\n", swap_count);
+					}
+					else if (sort_type == 2){
+						rev_bubble_sort(numbers, count, &swap_count);
+						printf("\nСортировка завершена за %.4f секунд.\n", (double)(clock() - start)/CLOCKS_PER_SEC);
+						printf("Кол-во операций: %d\n", swap_count);
+					}
 				}
 				break;
 			}
@@ -138,52 +180,70 @@ int main() {
 				}
 				if (numbers != NULL && count > 0) {
                     if (check(numbers, count)) {
-                        printf("\nЧисла отсортированы.\n");
-                    } else {
-                        printf("\nЧисла не отсортированы.\n");
-                    }
+                        printf("\nЧисла отсортированы по возрастанию.\n");
+                    } else if (check1(numbers, count)) {
+                        printf("\nЧисла отсортированы по убыванию.\n");
+                    } else{
+						printf("\nЧисла не отсортированы.\n");
+					}
                 }
                 break;
 
 			}
 			case 4: {
-				if (numbers == NULL) {
+				if (numbers == NULL || count <= 0) {
 					char filename[256];
 					printf ("Введите назвиние файла для чтения: ");
 					scanf("%255s", filename);
-					read_file(filename, &count);
+					numbers = read_file(filename, &count);
 				}
 				if (numbers != NULL && count > 0) {
-					if (!check(numbers, count)){
-						printf("Числа не отсортированы! Хотите отсортировать перед сохранением? (1 - да, 0 - нет): ");
-						int sort_choice;
-						scanf("%d", &sort_choice);
-						if (sort_choice == 1){
-							clock_t start = clock();
-							bubble_sort(numbers, count);
-							clock_t end = clock();
-							double stime = (double)(end - start) / CLOCKS_PER_SEC;
-							printf("Числа отсортированы за %.4f секунд.\n");
+					int sort = check(numbers,count);
+					int rev_sort = check1(numbers,count);
+
+					if (!sort && !rev_sort){
+						printf("Числа не отсортированы! Хотите отсортировать перед сохранением?\n ");
+						printf("Введите:\n1 - чтобы отсортировать по возрастанию\n2 - чтобы отсортировать по убыванию\nВаш выбор:");
+						int s_choice;
+						scanf("%d", &s_choice);
+
+						int swap_count = 0;
+						clock_t start = clock();
+						
+						if (s_choice == 1){
+							bubble_sort(numbers, count, &swap_count);
+							printf("\nСортировка завершена за %.4f секунд.\n", (double)(clock() - start)/CLOCKS_PER_SEC);
+							printf("Кол-во операций: %d\n", swap_count);
+						}
+						else if (s_choice == 2){
+							rev_bubble_sort(numbers, count, &swap_count);
+							printf("\nСортировка завершена за %.4f секунд.\n", (double)(clock() - start)/CLOCKS_PER_SEC);
+							printf("Кол-во операций: %d\n", swap_count);
+						}
+						else{
+							printf("Неверный выбор.\n");
 						}
 					}
 				}
-				char output_filename[256];
-				printf ("Введите название файла для сохранения: ");
-				scanf("%255s", &output_filename);
+				else{
+					printf ("Введите название файла для сохранения: ");
+					char output_filename[256];
+					scanf("%255s", &output_filename);
 
-				FILE *file = fopen(output_filename, "w");
-				if (file == NULL) {
-					printf("Ошибка открытия файла для записи!\n");
-				} else {
-					for (int i = 0; i < count; i++) {
-						fprintf(file, "%d\n", numbers[i]);
+					FILE *file = fopen(output_filename, "w");
+					if (file == NULL) {
+						printf("Ошибка открытия файла!\n");
+					} else {
+						for (int i = 0; i < count; i++) {
+							fprintf(file, "%d\n", numbers[i]);
+						}
+						fclose(file);
+						printf("Успешно сохранено %d чисел в файле '%s'.\n", count, output_filename);
 					}
-					fclose(file);
-					printf("Успешно сохранено %d чисел в файле '%s'.\n", count, output_filename);
 				}
-
-				break;
 			}
+			break;
+			
 			case 0: {
 				printf("Работа программы завершена.\n");
 				break;
