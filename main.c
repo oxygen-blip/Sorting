@@ -82,20 +82,20 @@ void rev_bubble_sort(int *array, int count, int *swap_count){
     }  
 }
 
-int check1 (int *array, int count) {
+int check (int *array, int count) {
 
     for (int i = 0; i < count - 1; i++) {
-        if (array[i] < array[i + 1]) {
+        if (array[i] > array[i + 1]) {
             return 0;
         }
     }
     return 1;
 }
 
-int check (int *array, int count) {
+int check1 (int *array, int count) {
 
     for (int i = 0; i < count - 1; i++) {
-        if (array[i] > array[i + 1]) {
+        if (array[i] < array[i + 1]) {
             return 0;
         }
     }
@@ -224,25 +224,26 @@ int main() {
 							printf("Неверный выбор.\n");
 						}
 					}
-				}
-				else{
-					printf ("Введите название файла для сохранения: ");
-					char output_filename[256];
-					scanf("%255s", &output_filename);
+					else
+					{
+						printf ("Введите название файла для сохранения: ");
+						char output_filename[256];
+						scanf("%255s", &output_filename);
 
-					FILE *file = fopen(output_filename, "w");
-					if (file == NULL) {
-						printf("Ошибка открытия файла!\n");
-					} else {
-						for (int i = 0; i < count; i++) {
-							fprintf(file, "%d\n", numbers[i]);
+						FILE *file = fopen(output_filename, "w");
+						if (file == NULL) {
+							printf("Ошибка открытия файла!\n");
+						} else {
+							for (int i = 0; i < count; i++) {
+								fprintf(file, "%d\n", numbers[i]);
+							}
+							fclose(file);
+							printf("Успешно сохранено %d чисел в файле '%s'.\n", count, output_filename);
 						}
-						fclose(file);
-						printf("Успешно сохранено %d чисел в файле '%s'.\n", count, output_filename);
 					}
 				}
+				break;
 			}
-			break;
 			
 			case 0: {
 				printf("Работа программы завершена.\n");
