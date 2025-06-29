@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <limits.h>
+#include <windows.h>
+#include <locale.h>
 
 #define MAX 100000
 
@@ -103,6 +105,11 @@ int check1 (int *array, int count) {
 }
 
 int main() {
+
+	SetConsoleCP(65001); 
+	SetConsoleOutputCP(65001); 
+	setlocale(LC_ALL, ".UTF8");
+
 	int choice;
 	int* numbers = NULL;
 	int count;
